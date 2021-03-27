@@ -1,11 +1,13 @@
 import { createApp } from 'vue'
 import App from '@/App.vue'
-import router from './router'
+import router from './Router'
+import axios from './Request'
 import Antd from './Plugins/AntDesign'
 import "ant-design-vue/dist/antd.css"
-import "../public/global.css"
+import "@/Global/index.less"
 
 const app = createApp(App)
 Antd(app)
-app.use(router)
-app.mount('#app')
+app.config.globalProperties.$axios = axios;
+app.config.globalProperties.$router = router;
+app.use(router).mount('#app')

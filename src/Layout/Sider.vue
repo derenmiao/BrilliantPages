@@ -2,15 +2,14 @@
   <a-menu
       mode="inline"
       theme="dark"
-      :inline-collapsed="collapsed"
     >
-    <sider-item :data="route" />
+    <sider-item :data="item" v-for="item in route" :key="item.key"/>
   </a-menu>
 </template>
 
 <script lang="ts">
-import routes from '../router/detail'
-import { ref, defineComponent, reactive } from 'vue'
+import routes from '@/router/detail.ts'
+import { defineComponent } from 'vue'
 import SiderItem from './SiderItem.vue'
 export default defineComponent({
   name: 'Sider',
@@ -18,8 +17,8 @@ export default defineComponent({
       'sider-item': SiderItem
   },
   setup: () => {
-    const route = [] as any
-    routes.forEach(e => !e.hident ? route.push(e) : '')
+    const route:any = []
+    routes.forEach((e:any) => !e.hident ? route.push(e) : '')
     return{ route }
   }
 })
