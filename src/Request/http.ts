@@ -1,18 +1,23 @@
 import axios from './index'
 
-export async function apiAwaitPost(src:string, pramas:any) {
+export async function apiAwaitPost(src:string, pramas:any={}, header:any={}) {
     const token:string = ""
     pramas = {...pramas, token }
-    const { data } = await axios.post(src, pramas)
+    const { data } = await axios.post(src, pramas, header)
     return data
 }
 
-export function apiNoAwaitPost(src:string, pramas:any) {
+export function apiNotAwaitPost(src:string, pramas:any={}, header:any={}) {
     const token:string = ""
     pramas = {...pramas, token }
-    return axios.post(src, pramas)
+    return axios.post(src, pramas, header)
 }
 
-export function apiGet(src:string, query:any){
-    console.log("query = ", query)
+export async function apiAwaitGet(src:string, pramas:any={}){
+    let { data } = await axios.get(src, pramas)
+    return data
+}
+
+export function apiNotAwaitGet(src:string, pramas:any={}){
+    return axios.get(src, pramas)
 }

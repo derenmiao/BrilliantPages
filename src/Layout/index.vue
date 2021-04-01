@@ -4,13 +4,20 @@
       breakpoint="lg"
       collapsed-width="0"
       v-if="state.full_hident"
-    ><div class="logo" /><Sider /></a-layout-sider>
+    >
+    <div class="logo" />
+    <Sider />
+    </a-layout-sider>
 
     <a-layout>
-      <a-layout-header v-if="state.full_hident" :style="{ background: '#fff', padding: 0 }"><Header /></a-layout-header>
+      <a-layout-header v-if="state.full_hident" :style="{ background: '#fff', padding: 0 }">
+        <Header />
+      </a-layout-header>
 
-      <a-layout-content  :class="state.full_hident?'content': 'hident_content'">
-        <router-view></router-view>
+      <a-layout-content  :class="state.full_hident ? 'content' : 'hident_content'">
+        <router-view>
+          <router-view></router-view>
+        </router-view>
       </a-layout-content>
 
       <a-layout-footer v-if="state.full_hident" style="text-align: center">

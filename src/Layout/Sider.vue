@@ -18,7 +18,7 @@ export default defineComponent({
   },
   setup: () => {
     const route:any = []
-    routes.forEach((e:any) => !e.hident ? route.push(e) : '')
+    routes.forEach((e:any) => !e.meta.hident ? route.push(e) : '')
     return{ route }
   }
 })

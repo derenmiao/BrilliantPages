@@ -35,14 +35,19 @@
             </a-row>
         </footer>
     </div>
-    <div v-show="dialogue.isshow" class="chat_box">{{dialogue.msg}}{{dialogue.mood}}</div>
+    <div v-show="dialogue.isshow" class="chat_box">
+        <span>{{dialogue.msg}}{{dialogue.mood}}</span>
+        <br><span>{{dialogue.tgt}}</span>
+    </div>
     
 </template>
 
 <script lang="ts">
 import { ref, defineComponent, onMounted, nextTick, reactive, onBeforeUnmount, watch } from 'vue'
 import { createFromIconfontCN } from '@ant-design/icons-vue';
-import { apiAwaitPost, apiNoAwaitPost } from '@/Request/http.ts'
+// import { IconFont } from '@/Components/Components.jsx'
+import { apiAwaitGet, apiNotAwaitPost } from '@/Request/http.ts'
+import { apiZh2Jp } from '@/Apis/thor.ts'
 import { message } from 'ant-design-vue';
 
 const IconFont = createFromIconfontCN({
@@ -71,7 +76,7 @@ export default defineComponent({
         {mood: '恶', emojs: '😰'},
         {mood: '惊', emojs: '😮'}]
 
-    const dialogue = reactive<any>({isshow: false, msg: 'Hello World', mood: ''})
+    const dialogue = reactive<any>({isshow: false, msg: 'Hello World', mood: '', tgt: ''})
     let handle = ref<any>(null)
     let chat_list = reactive<any>([{user:"thor", msg:"你好呀", mood:''}])
     const live2dInit = ():any => {
@@ -106,9 +111,32 @@ export default defineComponent({
         contref.value.scrollTop = contref.value.scrollHeight
     }
 
+    const Japanese = (text:string) => {
+        var url =  `http://tts.youdao.com/fanyivoice?word=${text}&le=jap&keyfrom=speaker-target`
+        let audio = new Audio(url);
+　　    audio.src = url;
+        audio.play()
+
+        let tt = setInterval(() => {
+            if(audio.ended) {
+                dialogue.isshow = false
+                clearInterval(tt)
+            }
+        }, 1000)
+    }
+
+    const ZhToJp = (text:string) => {
+        let url = `/youdao/translate?doctype=json&type=ZH_CN2JA&i=${text}`
+        apiZh2Jp(url).then((res:any) => {
+            if(!res) return;
+            dialogue.tgt = res.tgt
+            Japanese(res.tgt)
+        })
+    }
+
     const getAnswer = async (msg:string) => {
         loading.value = true
-        const res = await apiNoAwaitPost('/thorapi/getanswer', { msg })
+        const res = await apiNotAwaitPost('/thorapi/getanswer', { msg })
         const { result } = res.data
         loading.value = false
         let temp = {
@@ -120,18 +148,12 @@ export default defineComponent({
         dialogue.isshow = true
         dialogue.msg = result.text
         dialogue.mood = findEmoji(result.mood)
-        let show_msg_handle:any = setTimeout(()=>{
-            dialogue.isshow = false
-            show_msg_handle = null
-            clearTimeout(show_msg_handle)
-        }, 1500)
         // 稍后执行啦
         nextTick(()=>{
             updateScroll()
+            ZhToJp(result.text)
         })
     }
-
-
 
     const sendMsg = () => {
         if(input.value === ''){
@@ -179,7 +201,7 @@ export default defineComponent({
     width: 290px;
     height: 540px;
     border-radius: 8px;
-    box-shadow: 0px 0px 35px black;
+    box-shadow: 0px 0px 55px black;
     background-color: rgb(245,245,245);
     overflow: hidden;
 
